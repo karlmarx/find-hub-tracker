@@ -1,0 +1,27 @@
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: tracker
+      POSTGRES_PASSWORD: tracker
+      POSTGRES_DB: find_hub_tracker
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+
+  # The app itself can run outside Docker during dev (just `uv run`)
+  # or be containerized for deployment:
+  tracker:
+    build: .
+    env_file: .env
+    depends_on:
+      - postgres
+    volumes:
+      - ./Auth:/app/Auth:ro
+    profiles:
+      - deploy  # Only start with `docker compose --profile deploy up`
+
+volumes:
+  pgdata:

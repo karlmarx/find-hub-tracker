@@ -1,0 +1,44 @@
+[project]
+name = "find-hub-tracker"
+version = "0.1.0"
+description = "Poll Google Find Hub for device locations and battery levels, store history in Postgres/SQLite, publish to Discord"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "asyncpg>=0.30.0",
+    "aiosqlite>=0.20.0",
+    "httpx>=0.27.0",
+    "pydantic>=2.0",
+    "pydantic-settings>=2.0",
+    "rich>=13.0",
+    "click>=8.1",
+    "apscheduler>=4.0.0a5",
+    "structlog>=24.0",
+    "gpsoauth>=1.1.0",
+    "cryptography>=43.0",
+    "pycryptodomex>=3.20",
+    "protobuf>=5.0",
+]
+
+[project.scripts]
+find-hub-tracker = "find_hub_tracker.main:cli"
+find-hub = "find_hub_tracker.main:cli"
+
+[tool.uv.sources]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/find_hub_tracker"]
+
+[tool.ruff]
+target-version = "py314"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "A", "SIM"]
+
+[tool.ruff.format]
+docstring-code-format = true
