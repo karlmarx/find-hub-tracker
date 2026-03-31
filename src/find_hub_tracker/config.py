@@ -46,16 +46,15 @@ class Settings(BaseSettings):
     healthchecks_ping_url: str = ""
     heartbeat_stale_threshold_minutes: int = 15
 
-    # Device filter
-    devices_to_track: list[str] = []
+    # Device filter (comma-separated string in .env, parsed to list)
+    devices_to_track: str = ""
 
-    @field_validator("devices_to_track", mode="before")
-    @classmethod
-    def parse_devices_list(cls, v: object) -> list[str]:
-        """Parse comma-separated device names into a list."""
-        if isinstance(v, str):
-            return [d.strip() for d in v.split(",") if d.strip()]
-        return v  # type: ignore[return-value]
+    @property
+    def devices_to_track_list(self) -> list[str]:
+        """Return parsed list of device names to track."""
+        if not self.devices_to_track:
+            return []
+        return [d.strip() for d in self.devices_to_track.split(",") if d.strip()]
 
     @field_validator("db_backend", mode="after")
     @classmethod

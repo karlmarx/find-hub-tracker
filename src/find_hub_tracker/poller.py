@@ -131,7 +131,7 @@ class Poller:
     async def poll_locations(self) -> None:
         """Execute a single polling cycle: query devices, compare, persist, publish."""
         try:
-            device_filter = self.settings.devices_to_track or None
+            device_filter = self.settings.devices_to_track_list or None
 
             locations = await self.fmd.get_all_locations(device_filter)
             if not locations:
