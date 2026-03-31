@@ -1,16 +1,15 @@
 [Unit]
 Description=Find Hub Device Tracker
-After=network-online.target postgresql.service
+After=network-online.target
 Wants=network-online.target
 
 [Service]
 Type=simple
-User=tracker
-WorkingDirectory=/opt/find-hub-tracker
-EnvironmentFile=/opt/find-hub-tracker/.env
-ExecStart=/opt/find-hub-tracker/.venv/bin/python -m find_hub_tracker start
+WorkingDirectory=%h/find-hub-tracker
+ExecStart=%h/.local/bin/uv run find-hub-tracker start
 Restart=always
 RestartSec=30
+Environment=PATH=%h/.local/bin:%h/.cargo/bin:/usr/local/bin:/usr/bin:/bin
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target
