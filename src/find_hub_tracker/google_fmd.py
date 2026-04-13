@@ -244,8 +244,26 @@ class GoogleFindMyDevices:
         await asyncio.to_thread(self._authenticate_sync)
 
     def _authenticate_sync(self) -> None:
-        """Synchronous auth flow."""
-        from Auth.auth_flow import request_oauth_account_token_flow
+        """Synchronous auth flow.
 
-        request_oauth_account_token_flow()
-        log.info("authentication_complete")
+        Triggers the full GoogleFindMyTools chain:
+          1. Chrome OAuth login → oauth_token
+          2. gpsoauth exchange → AAS token (saved to GoogleFindMyTools/Auth/secrets.json)
+          3. FCM registration (cached in same file)
+        Then copies the resulting secrets.json into the project's Auth/ directory.
+        """
+        import shutil
+
+        from Auth.aas_token_retrieval import get_aas_token
+        from Auth.token_cache import _get_secrets_file
+
+        # Trigger the full auth chain (Chrome → AAS token → saved to GFMT's Auth/)
+        get_aas_token()
+
+        # Copy secrets from GoogleFindMyTools/Auth/secrets.json to project Auth/
+        gfmt_secrets = Path(_get_secrets_file())
+        dest = self.auth_dir / "secrets.json"
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(gfmt_secrets, dest)
+
+        log.info("authentication_complete", secrets_path=str(dest))
